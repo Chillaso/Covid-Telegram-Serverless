@@ -1,0 +1,29 @@
+service: covid-increment-sls
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: eu-west-1
+  environment:
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+
+functions:
+  covid:
+    handler: handler.getIncrement
+    events:
+      - http:
+          path: get-increment
+          method: post
+	  cors: true
+#      - cloudwatchEvent:
+#          event:
+#            source:
+#              - "aws.ec2"
+#            detail-type:
+#              - "EC2 Instance State-change Notification"
+#            detail:
+#              state:
+#                - pending
+plugins:
+  - serverless-offline
