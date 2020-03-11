@@ -1,0 +1,23 @@
+{
+  "name": "covid-increment-spain",
+  "version": "1.0.0",
+  "description": "Covid increment information",
+  "main": "handler.js",
+  "dependencies": {
+    "bent": "^7.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chillaso/covid-increment-spain.git"
+  },
+  "author": "Chillaso",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chillaso/covid-increment-spain/issues"
+  },
+  "homepage": "https://github.com/Chillaso/covid-increment-spain#readme"
+}
