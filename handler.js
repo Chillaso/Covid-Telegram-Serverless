@@ -1,12 +1,14 @@
 'use strict';
 
 const bent = require('bent');
-const cheerio = require('cheerio');
+
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 
 const COVID_DATA_HOSTNAME = 'https://www.epdata.es/';
 const COVID_DATA_URI = 'oembed/get/';
 const COVID_DATA_PAYLOAD = { Formato: 'json', Guid: 'a3e214f9-bab7-4231-97b8-edbe9d0c85a3', Host: 'wwww.epdata.es' };
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
+const LAST_HOUR_URI = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=(Confirmed%20%3E%200)%20AND%20(Deaths%3E0)%20AND%20(Country_Region%3D%27Spain%27)&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Deaths%20desc%2CCountry_Region%20asc%2CProvince_State%20asc&outSR=102100&resultOffset=0&resultRecordCount=250&cacheHint=true';
+
 const HELP_MESSAGE = 'Por favor use alguno de los comandos siguientes:\n/incremento - Obtiene el incremento de contagiados respecto al dia anterior' + 
 '\n/ultimahora - Obtiene los ultimos datos de personas contagiadas';
 
@@ -26,20 +28,14 @@ const calcIncrement = (covidData) => {
 
 const getLastHourInfo = async () => {
 	var get = bent('string');
-	var html = await get('http://www.mscbs.gob.es/profesionales/saludPublica/ccayes/alertasActual/nCov-China/situacionActual.htm');
-	
-	var $ = cheerio.load(html);
-	var infected = $('.banner-coronavirus p.cifra');
-	var lastUpdatedHour = $($('section.col-sm-8.col-md-9.informacion div.imagen_texto')).children().first().text();
+	var response = await get(LAST_HOUR_URI);
+	var info = JSON.parse(response).features[0].attributes;
+	var date = new Date(info.Last_Update).toLocaleString();
 
-	let infectedSpain = infected.eq(0).text();
-	let infectedEurope = infected.eq(1).text();
-	let infectedWorld = infected.eq(2).text();
-
-	return 'Ultima hora datos actualizados sobre personas contagiadas del coronavirus (' + lastUpdatedHour +'):\n'
-	+ 'España - ' + infectedSpain + ' infectados\n'
-	+ 'Europa - ' + infectedEurope + ' infectados \n'
-	+ 'Mundo - ' + infectedWorld + ' infectados';
+	return 'Datos actualizados sobre personas contagiadas del coronavirus en España(' + date +'):\n' +
+	info.Confirmed + ' - personas infectadas\n' + 
+	info.Deaths + ' - personas fallecidas \n' +
+	info.Recovered + ' - personas recuperadas';
 }
 
 const getSendMessage = async (text) => {
