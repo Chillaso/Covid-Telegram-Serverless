@@ -1,11 +1,14 @@
 'use strict';
 
 const bent = require('bent');
+const cheerio = require('cheerio');
 
 const COVID_DATA_HOSTNAME = 'https://www.epdata.es/';
 const COVID_DATA_URI = 'oembed/get/';
 const COVID_DATA_PAYLOAD = { Formato: 'json', Guid: 'a3e214f9-bab7-4231-97b8-edbe9d0c85a3', Host: 'wwww.epdata.es' };
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
+const HELP_MESSAGE = "Por favor use alguno de los comandos siguientes:\n/datos - Obtiene los datos sobre el incremento de infectados por coronavirus" +
+"\n/ultimaHora - Obtiene el ultimo numero de contagiados disponible";
 
 const getData = async () => {
 	const post = bent(COVID_DATA_HOSTNAME, 'POST', 'json', 200);
@@ -21,6 +24,36 @@ const calcIncrement = (covidData) => {
 	+ ' pasando de ' + twoDaysAgo.Valor + ' a ' + yesterday.Valor + ' afectados.';
 }
 
+const getLastHourInfo = async () => {
+	var get = bent('string');
+	var html = await get('http://www.mscbs.gob.es/profesionales/saludPublica/ccayes/alertasActual/nCov-China/situacionActual.htm');
+	
+	var $ = cheerio.load(html);
+	var infected = $('.banner-coronavirus p.cifra');
+	var lastUpdatedHour = $($('section.col-sm-8.col-md-9.informacion div.imagen_texto')).children().first().text();
+
+	let infectedSpain = infected.eq(0).text();
+	let infectedEurope = infected.eq(1).text();
+	let infectedWorld = infected.eq(2).text();
+
+	return 'Ultima hora datos actualizados sobre personas contagiadas del coronavirus (' + lastUpdatedHour +'):\n'
+	+ 'España - ' + infectedSpain + ' infectados\n'
+	+ 'Europa - ' + infectedEurope + ' infectados \n'
+	+ 'Mundo - ' + infectedWorld + ' infectados';
+}
+
+const getSendMessage = async (text) => {
+	switch(text)
+	{
+		case '/datos':
+			return await getData().then(calcIncrement);
+		case '/ultimaHora':
+			return await getLastHourInfo();
+		default:
+			return HELP_MESSAGE;
+	}
+}
+
 const sendToUser = async (chat_id, text) => 
 {
 	const get = bent('https://api.telegram.org/', 'GET', 'json', 200);
@@ -31,19 +64,11 @@ const sendToUser = async (chat_id, text) =>
 module.exports.getIncrement = async event => {
 
 	const body = JSON.parse(event.body);
-	console.log('Telegram bot body', body);
 	const { chat, text } = body.message;
-	console.log("Text from telegram", text);
-	if (text == '/datos') 
-	{
-		console.log('Getting covid data...')
-		let message = await getData().then(calcIncrement);
-		console.log('Message response...', message);
 
-		await sendToUser(chat.id, message);
-	}
-	else
-		await sendToUser(chat.id, "Use /datos para obtener los datos del incremento del coronavirus");
+	let message = await getSendMessage(text);
+	console.log('Sending Message...', message);
+	//await sendToUser(chat.id, message);
 
 	return { statusCode: 200 };
 };

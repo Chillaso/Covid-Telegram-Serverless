@@ -4,9 +4,12 @@
   "description": "Covid increment information",
   "main": "handler.js",
   "dependencies": {
-    "bent": "^7.1.1"
+    "bent": "^7.1.1",
+    "cheerio": "^1.0.0-rc.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "serverless-offline": "^5.12.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
