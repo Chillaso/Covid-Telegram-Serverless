@@ -45,7 +45,7 @@ const getLastHourInfo = async () => {
 const getSendMessage = async (text) => {
 	switch(text)
 	{
-		case '/datos':
+		case '/incremento':
 			return await getData().then(calcIncrement);
 		case '/ultimaHora':
 			return await getLastHourInfo();
