@@ -61,14 +61,14 @@ const sendToUser = async (chat_id, text) =>
 	return await get(uri, {chat_id, text})
 }
 
-module.exports.getIncrement = async event => {
+module.exports.covid = async event => {
 
 	const body = JSON.parse(event.body);
 	const { chat, text } = body.message;
 
 	let message = await getSendMessage(text);
-	console.log('Sending Message...', message);
-	//await sendToUser(chat.id, message);
+	//console.log('Sending Message...', message);
+	await sendToUser(chat.id, message);
 
 	return { statusCode: 200 };
 };

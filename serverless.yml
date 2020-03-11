@@ -13,7 +13,7 @@ functions:
     handler: handler.getIncrement
     events:
       - http:
-          path: get-increment
+          path: covid
           method: post
 	  cors: true
 #      - cloudwatchEvent:
