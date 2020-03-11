@@ -32,18 +32,19 @@ const getLastHourInfo = async () => {
 	var info = JSON.parse(response).features[0].attributes;
 	var date = new Date(info.Last_Update).toLocaleString();
 
-	return 'Datos actualizados sobre personas contagiadas del coronavirus en España(' + date +'):\n' +
+	return 'Datos actualizados sobre personas contagiadas del coronavirus en España (' + date +'):\n' +
 	info.Confirmed + ' - personas infectadas\n' + 
 	info.Deaths + ' - personas fallecidas \n' +
-	info.Recovered + ' - personas recuperadas';
+	info.Recovered + ' - personas recuperadas\n' + 
+	(info.Confirmed - info.Deaths - info.Recovered) + ' - personas activas infectadas';
 }
 
 const getSendMessage = async (text) => {
 	switch(text)
 	{
-		case '/incremento':
+		case '/incremento' || 'incremento':
 			return await getData().then(calcIncrement);
-		case '/ultimahora':
+		case '/ultimahora' || 'ultimahora':
 			return await getLastHourInfo();
 		default:
 			return HELP_MESSAGE;
