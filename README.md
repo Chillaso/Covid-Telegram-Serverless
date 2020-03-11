@@ -23,9 +23,10 @@ then, install serverless globally
 ```shell
 npm install -g serverless
 ```
-now, clone repo
+now, clone repo and install modules
 ```shell
 git clone https://github.com/Chillaso/covid-increment-spain.git
+npm i
 ```
 export your telegram token (without <>)
 ```shell
