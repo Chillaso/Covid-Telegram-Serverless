@@ -22,8 +22,8 @@ const calcIncrement = (covidData) => {
 	var twoDaysAgo = covidData[covidData.length - 2];
 	var yesterday = covidData[covidData.length - 1];
 	var increment = (((yesterday.Valor - twoDaysAgo.Valor) / twoDaysAgo.Valor) * 100).toFixed(2);
-	return 'Los casos de coronavirus han incrementado un: ' + increment + '% desde el ' + twoDaysAgo.Parametro + ' hasta el ' + yesterday.Parametro 
-	+ ' pasando de ' + twoDaysAgo.Valor + ' a ' + yesterday.Valor + ' afectados.';
+	return '\u2623 Los casos de coronavirus han incrementado un: *' + increment + '%* desde el ' + twoDaysAgo.Parametro + ' hasta el ' + yesterday.Parametro 
+	+ ' pasando de ' + twoDaysAgo.Valor + ' a ' + yesterday.Valor + ' afectados, según fuentes del Ministerio de Sanidad.';
 }
 
 const getLastHourInfo = async () => {
@@ -32,19 +32,19 @@ const getLastHourInfo = async () => {
 	var info = JSON.parse(response).features[0].attributes;
 	var date = new Date(info.Last_Update).toLocaleString();
 
-	return 'Datos actualizados sobre personas contagiadas del coronavirus en España (' + date +'):\n' +
-	info.Confirmed + ' - personas infectadas\n' + 
-	info.Deaths + ' - personas fallecidas \n' +
-	info.Recovered + ' - personas recuperadas\n' + 
-	(info.Confirmed - info.Deaths - info.Recovered) + ' - personas activas infectadas';
+	return '\u26A0 \u26A0 Datos actualizados sobre personas contagiadas del coronavirus en España (_' + date + '_):\n\n' +
+	'\u2623 - *'+ info.Confirmed + '* - personas infectadas\n\n' + 
+	'\u26B0 - *'+ info.Deaths + '* - personas fallecidas\n\n' +
+	'\u2705 - *'+ info.Recovered + '* - personas recuperadas\n\n' + 
+	'\u2757 - *'+ (info.Confirmed - info.Deaths - info.Recovered) + '* - personas activas infectadas';
 }
 
 const getSendMessage = async (text) => {
 	switch(text)
 	{
-		case '/incremento' || 'incremento':
+		case '/incremento':
 			return await getData().then(calcIncrement);
-		case '/ultimahora' || 'ultimahora':
+		case '/ultimahora':
 			return await getLastHourInfo();
 		default:
 			return HELP_MESSAGE;
@@ -55,16 +55,14 @@ const sendToUser = async (chat_id, text) =>
 {
 	const get = bent('https://api.telegram.org/', 'GET', 'json', 200);
 	const uri = `bot${TELEGRAM_TOKEN}/sendMessage`;
-	return await get(uri, {chat_id, text})
+	return await get(uri, {chat_id, text, parse_mode: "Markdown"});
 }
 
 module.exports.covidApp = async event => {
 
 	const body = JSON.parse(event.body);
 	const { chat, text } = body.message;
-
 	let message = await getSendMessage(text);
-	//console.log('Sending Message...', message);
 	await sendToUser(chat.id, message);
 
 	return { statusCode: 200 };
