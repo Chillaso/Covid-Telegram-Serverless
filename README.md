@@ -44,10 +44,9 @@ Open a terminal and enter this, replacing your endpoint that you get it in ``sls
 curl --request POST --url https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook --header 'content-type: application/json' --data '{"url": "<your_api_endpoint>"}'
 ```
 ## TODO LIST
-[ ] Get data by day
-[ ] Get data by countries
-[ ] Better command view in telegram bot
-[ ] Cloudwatch event every day sending message with coronavirus news or updating data
-[ ] Death and healed information
-[ ] ...
-
+* Get data by day
+* Get data by countries
+* Better command view in telegram bot
+* Cloudwatch event every day sending message with coronavirus news or updating data
+* Death and healed information
+* ...
