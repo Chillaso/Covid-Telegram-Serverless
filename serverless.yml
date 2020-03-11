@@ -10,7 +10,7 @@ provider:
 
 functions:
   covid:
-    handler: handler.getIncrement
+    handler: handler.covid
     events:
       - http:
           path: covid
