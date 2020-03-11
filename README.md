@@ -22,6 +22,7 @@ nvm install node stable
 then, install serverless globally
 ```shell
 npm install -g serverless
+npm install serverless-offline --save-dev
 ```
 now, clone repo and install modules
 ```shell
