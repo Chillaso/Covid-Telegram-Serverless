@@ -10,7 +10,7 @@ provider:
 
 functions:
   covid:
-    handler: handler.covid
+    handler: handler.covidApp
     events:
       - http:
           path: covid

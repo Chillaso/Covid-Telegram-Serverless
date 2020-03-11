@@ -7,8 +7,8 @@ const COVID_DATA_HOSTNAME = 'https://www.epdata.es/';
 const COVID_DATA_URI = 'oembed/get/';
 const COVID_DATA_PAYLOAD = { Formato: 'json', Guid: 'a3e214f9-bab7-4231-97b8-edbe9d0c85a3', Host: 'wwww.epdata.es' };
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const HELP_MESSAGE = "Por favor use alguno de los comandos siguientes:\n/datos - Obtiene los datos sobre el incremento de infectados por coronavirus" +
-"\n/ultimaHora - Obtiene el ultimo numero de contagiados disponible";
+const HELP_MESSAGE = 'Por favor use alguno de los comandos siguientes:\n/incremento - Obtiene el incremento de contagiados respecto al dia anterior' + 
+'\n/ultimahora - Obtiene los ultimos datos de personas contagiadas';
 
 const getData = async () => {
 	const post = bent(COVID_DATA_HOSTNAME, 'POST', 'json', 200);
@@ -47,7 +47,7 @@ const getSendMessage = async (text) => {
 	{
 		case '/incremento':
 			return await getData().then(calcIncrement);
-		case '/ultimaHora':
+		case '/ultimahora':
 			return await getLastHourInfo();
 		default:
 			return HELP_MESSAGE;
@@ -61,7 +61,7 @@ const sendToUser = async (chat_id, text) =>
 	return await get(uri, {chat_id, text})
 }
 
-module.exports.covid = async event => {
+module.exports.covidApp = async event => {
 
 	const body = JSON.parse(event.body);
 	const { chat, text } = body.message;
