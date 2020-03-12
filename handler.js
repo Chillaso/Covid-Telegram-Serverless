@@ -20,6 +20,9 @@ const getData = async () => {
 
 const calcIncrement = (covidData) => {
 
+	const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+					'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
 	const today = new Date();
 	const yesterday = new Date();
 	yesterday.setDate(today.getDate() - 1)
@@ -28,9 +31,9 @@ const calcIncrement = (covidData) => {
 	var yesterdayInfo = [];	
 
 	covidData.forEach(day => {
-		if(day.Parametro.includes(today.getDate()))
+		if(day.Parametro.includes(today.getDate() + ' ('+ months[today.getMonth()] +')'))
 			todayInfo = day;
-		if(day.Parametro.includes(yesterday.getDate()))
+		if(day.Parametro.includes(yesterday.getDate() + ' ('+ months[yesterday.getMonth()] +')'))
 			yesterdayInfo = day;
 	});
 
@@ -41,14 +44,15 @@ const calcIncrement = (covidData) => {
 		twoDaysAgo.setDate(yesterday.getDate() - 1);
 
 		covidData.forEach(day => {
-			if(day.Parametro.includes(yesterday.getDate()))
+			if(day.Parametro.includes(yesterday.getDate() + ' ('+ months[yesterday.getMonth()] +')'))
 				todayInfo = day;
-			if(day.Parametro.includes(twoDaysAgo.getDate()))
+			if(day.Parametro.includes(twoDaysAgo.getDate() + ' ('+ months[twoDaysAgo.getMonth()] +')'))
 				yesterdayInfo = day;
 		});
 	}
 
-	var increment = (((yesterdayInfo.Valor - yesterdayInfo.Valor) / yesterdayInfo.Valor) * 100).toFixed(2);
+	var increment = (((todayInfo.Valor - yesterdayInfo.Valor) / yesterdayInfo.Valor) * 100).toFixed(2);
+
 	return '\u2623 Los casos de coronavirus han incrementado un: *' + increment + '%* desde el ' + yesterdayInfo.Parametro + ' hasta el ' + todayInfo.Parametro 
 	+ ' pasando de ' + yesterdayInfo.Valor + ' a ' + todayInfo.Valor + ' afectados, según fuentes del Ministerio de Sanidad.';
 }
