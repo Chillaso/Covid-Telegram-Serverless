@@ -19,11 +19,38 @@ const getData = async () => {
 }
 
 const calcIncrement = (covidData) => {
-	var twoDaysAgo = covidData[covidData.length - 2];
-	var yesterday = covidData[covidData.length - 1];
-	var increment = (((yesterday.Valor - twoDaysAgo.Valor) / twoDaysAgo.Valor) * 100).toFixed(2);
-	return '\u2623 Los casos de coronavirus han incrementado un: *' + increment + '%* desde el ' + twoDaysAgo.Parametro + ' hasta el ' + yesterday.Parametro 
-	+ ' pasando de ' + twoDaysAgo.Valor + ' a ' + yesterday.Valor + ' afectados, según fuentes del Ministerio de Sanidad.';
+
+	const today = new Date();
+	const yesterday = new Date();
+	yesterday.setDate(today.getDate() - 1)
+
+	var todayInfo = [];	
+	var yesterdayInfo = [];	
+
+	covidData.forEach(day => {
+		if(day.Parametro.includes(today.getDate()))
+			todayInfo = day;
+		if(day.Parametro.includes(yesterday.getDate()))
+			yesterdayInfo = day;
+	});
+
+	//We dont have data from today yet
+	if(todayInfo.length == 0)
+	{
+		const twoDaysAgo = new Date();
+		twoDaysAgo.setDate(yesterday.getDate() - 1);
+
+		covidData.forEach(day => {
+			if(day.Parametro.includes(yesterday.getDate()))
+				todayInfo = day;
+			if(day.Parametro.includes(twoDaysAgo.getDate()))
+				yesterdayInfo = day;
+		});
+	}
+
+	var increment = (((yesterdayInfo.Valor - yesterdayInfo.Valor) / yesterdayInfo.Valor) * 100).toFixed(2);
+	return '\u2623 Los casos de coronavirus han incrementado un: *' + increment + '%* desde el ' + yesterdayInfo.Parametro + ' hasta el ' + todayInfo.Parametro 
+	+ ' pasando de ' + yesterdayInfo.Valor + ' a ' + todayInfo.Valor + ' afectados, según fuentes del Ministerio de Sanidad.';
 }
 
 const getLastHourInfo = async () => {
