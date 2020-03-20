@@ -12,7 +12,8 @@ const HEALED_PAYLOAD = { Formato: 'json', Guid: '58d0919c-8ad1-4a3f-9255-55f5b11
 const DEATH_PAYLOAD = { Formato: 'json', Guid: 'b2568be9-c6b6-4056-86d6-02c6d45b1696', Host: 'wwww.epdata.es' };
 
 const HELP_MESSAGE = 'Por favor use alguno de los comandos siguientes:\n/incremento - Obtiene el incremento de contagiados respecto al dia anterior' + 
-'\n/ultimahora - Obtiene los ultimos datos de personas contagiadas';
+'\n/ultimahora - Obtiene los ultimos datos de personas contagiadas' +
+'\n /noticias - Obtiene las 10 ultimas noticias sobre el coronavirus';
 
 const getData = async (payload) => {
 	const post = bent(COVID_DATA_HOSTNAME, 'POST', 'json', 200);
@@ -26,7 +27,7 @@ const calcIncrement = (covidData) => {
 
 	var increment = (((todayInfo.Valor - yesterdayInfo.Valor) / yesterdayInfo.Valor) * 100).toFixed(2);
 
-	return '\u2623 Los casos de coronavirus han incrementado un: *' + increment + '%* desde el ' + yesterdayInfo.Parametro + ' hasta el ' + todayInfo.Parametro 
+	return '\u2623 Los casos de coronavirus han incrementado un: <b>' + increment + '%</b> desde el ' + yesterdayInfo.Parametro + ' hasta el ' + todayInfo.Parametro 
 	+ ' pasando de ' + yesterdayInfo.Valor + ' a ' + todayInfo.Valor + ' afectados, según fuentes del Ministerio de Sanidad.';
 }
 
@@ -69,11 +70,11 @@ const getLastHourInfo = async () => {
 	var healed = (await getData(HEALED_PAYLOAD).then(filterInfoByDate)).todayInfo;
 	var death = (await getData(DEATH_PAYLOAD).then(filterInfoByDate)).todayInfo;
 
-	return '\u26A0 \u26A0 Datos actualizados sobre personas contagiadas del coronavirus en España (_' + infected.Parametro + '_):\n\n' +
-	'\u2623 - *'+ infected.Valor + '* - personas infectadas\n\n' + 
-	'\u26B0 - *'+ death.Valor + '* - personas fallecidas\n\n' +
-	'\u2705 - *'+ healed.Valor + '* - personas recuperadas\n\n' + 
-	'\u2757 - *'+ (infected.Valor - death.Valor - healed.Valor) + '* - personas activas infectadas';
+	return '\u26A0 \u26A0 Datos actualizados sobre personas contagiadas del coronavirus en España <i>' + infected.Parametro + '</i>:\n\n' +
+	'\u2623 - <b>'+ infected.Valor + '</b> - personas infectadas\n\n' + 
+	'\u26B0 - <b>'+ death.Valor + '</b> - personas fallecidas\n\n' +
+	'\u2705 - <b>'+ healed.Valor + '</b> - personas recuperadas\n\n' + 
+	'\u2757 - <b>'+ (infected.Valor - death.Valor - healed.Valor) + '</b> - personas activas infectadas';
 }
 
 const getNews = async () => {
