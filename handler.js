@@ -90,8 +90,12 @@ const getNews = async () => {
 		times.push($(element).text())
 	});
 
-	$('.eventos li.evento .texto p').each((i, element) => {
-		events.push($(element).html());
+	$('.eventos li.evento .texto').each((i, element) => {
+		var event = '';
+		$(element).children('p').each((i, paragraph) => {
+			event += $(paragraph).html();
+		});
+		events.push(event);
 	});
 
 	for(var i = 0; i < 10; i++)
