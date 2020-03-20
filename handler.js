@@ -105,6 +105,7 @@ const getNews = async () => {
 };
 
 const isHtmlEventsRight = (events, index) => {
+	//TODO: Rethink this method to get consistent information and dont lose parity time - news
 	if(events[index].indexOf('<img') == -1)
 		return true;
 	else if(index < 10)
