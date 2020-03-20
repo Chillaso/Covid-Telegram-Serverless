@@ -1,6 +1,7 @@
 'use strict';
 
 const bent = require('bent');
+const cheerio = require('cheerio');
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 
@@ -9,8 +10,6 @@ const COVID_DATA_URI = 'oembed/get/';
 const INFECTED_PAYLOAD = { Formato: 'json', Guid: 'a3e214f9-bab7-4231-97b8-edbe9d0c85a3', Host: 'wwww.epdata.es' };
 const HEALED_PAYLOAD = { Formato: 'json', Guid: '58d0919c-8ad1-4a3f-9255-55f5b116da23', Host: 'wwww.epdata.es' };
 const DEATH_PAYLOAD = { Formato: 'json', Guid: 'b2568be9-c6b6-4056-86d6-02c6d45b1696', Host: 'wwww.epdata.es' };
-
-//const LAST_HOUR_URI = 'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/1/query?f=json&where=(Confirmed%20%3E%200)%20AND%20(Deaths%3E0)%20AND%20(Country_Region%3D%27Spain%27)&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Deaths%20desc%2CCountry_Region%20asc%2CProvince_State%20asc&outSR=102100&resultOffset=0&resultRecordCount=250&cacheHint=true';
 
 const HELP_MESSAGE = 'Por favor use alguno de los comandos siguientes:\n/incremento - Obtiene el incremento de contagiados respecto al dia anterior' + 
 '\n/ultimahora - Obtiene los ultimos datos de personas contagiadas';
@@ -77,6 +76,43 @@ const getLastHourInfo = async () => {
 	'\u2757 - *'+ (infected.Valor - death.Valor - healed.Valor) + '* - personas activas infectadas';
 }
 
+const getNews = async () => {
+	const get = bent('string');
+	var message = '';
+
+	const html = await get('https://www.rtve.es/noticias/20200320/coronavirus-ultima-hora-directo/2008165.shtml');
+
+	var $ = cheerio.load(html);
+	var times = [];
+	var events = [];
+	$('.eventos li.evento span.time').each((i, element) => {
+		times.push($(element).text())
+	});
+
+	$('.eventos li.evento .texto p').each((i, element) => {
+		events.push($(element).html());
+	});
+
+	for(var i = 0; i < 10; i++)
+	{
+		if(isHtmlEventsRight(events, i))
+			message += '• ' + times[i] + ' - ' + events[i] + '\n\n';
+	}
+
+	message += 'Fuente de datos: RTVE. '
+	
+	return message;
+};
+
+const isHtmlEventsRight = (events, index) => {
+	if(events[index].indexOf('<img') == -1)
+		return true;
+	else if(index < 10)
+		isHtmlEventsRight(events, index + 1);
+	else
+		return false;
+};
+
 const getSendMessage = async (text) => {
 	switch(text)
 	{
@@ -84,6 +120,8 @@ const getSendMessage = async (text) => {
 			return await getData(INFECTED_PAYLOAD).then(calcIncrement);
 		case '/ultimahora':
 			return await getLastHourInfo();
+		case '/noticias':
+			return await getNews();
 		default:
 			return HELP_MESSAGE;
 	}
@@ -93,7 +131,7 @@ const sendToUser = async (chat_id, text) =>
 {
 	const get = bent('https://api.telegram.org/', 'GET', 'json', 200);
 	const uri = `bot${TELEGRAM_TOKEN}/sendMessage`;
-	return await get(uri, {chat_id, text, parse_mode: "Markdown"});
+	return await get(uri, {chat_id, text, parse_mode: "HTML"});
 }
 
 module.exports.covidApp = async event => {
