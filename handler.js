@@ -7,6 +7,7 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 
 const COVID_DATA_HOSTNAME = 'https://www.epdata.es/';
 const COVID_DATA_URI = 'oembed/get/';
+const COVID_NEWS_URI = 'https://www.rtve.es/noticias/20200321/coronavirus_ultima_hora_espana_mundo/2008165.shtml';
 const INFECTED_PAYLOAD = { Formato: 'json', Guid: 'a3e214f9-bab7-4231-97b8-edbe9d0c85a3', Host: 'wwww.epdata.es' };
 const HEALED_PAYLOAD = { Formato: 'json', Guid: '58d0919c-8ad1-4a3f-9255-55f5b116da23', Host: 'wwww.epdata.es' };
 const DEATH_PAYLOAD = { Formato: 'json', Guid: 'b2568be9-c6b6-4056-86d6-02c6d45b1696', Host: 'wwww.epdata.es' };
@@ -81,7 +82,7 @@ const getNews = async () => {
 	const get = bent('string');
 	var message = '';
 
-	const html = await get('https://www.rtve.es/noticias/20200320/coronavirus-ultima-hora-directo/2008165.shtml');
+	const html = await get(COVID_NEWS_URI);
 
 	var $ = cheerio.load(html);
 	var times = [];
