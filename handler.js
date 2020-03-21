@@ -80,7 +80,7 @@ const getLastHourInfo = async () => {
 
 const getNews = async () => {
 	const get = bent('string');
-	var message = '';
+	var message = '\u2757 \u2757 ÚLTIMA HORA \u2757 \u2757 \n\n';
 
 	const html = await get(COVID_NEWS_URI);
 
@@ -106,7 +106,7 @@ const getNews = async () => {
 			message += '• ' + times[i] + ' - ' + events[i] + '\n\n';
 	}
 
-	message += 'Fuente de datos: RTVE. '
+	message += 'Fuente de datos: <a href="' + COVID_NEWS_URI + '">RTVE.</a>';
 	
 	return message;
 };
