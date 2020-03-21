@@ -93,10 +93,11 @@ const getNews = async () => {
 
 	$('.eventos li.evento .texto').each((i, element) => {
 		var event = '';
-		$(element).children('p').each((i, paragraph) => {
+		$(element).find('p').each((i, paragraph) => {
 			event += $(paragraph).html() + '\n';
 		});
-		events.push(event);
+		if(event != '')
+			events.push(event);
 	});
 
 	for(var i = 0; i < 10; i++)
