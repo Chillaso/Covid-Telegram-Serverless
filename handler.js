@@ -79,34 +79,21 @@ const getLastHourInfo = async () => {
 }
 
 const getNews = async () => {
-	const get = bent('string');
+	var get = bent(301,200);
 	var message = '\u2757 \u2757 ÚLTIMA HORA \u2757 \u2757 \n\n';
 
-	const html = await get(COVID_NEWS_URI);
-
-	var $ = cheerio.load(html);
-	var times = [];
-	var events = [];
-	$('.eventos li.evento span.time').each((i, element) => {
-		times.push($(element).text())
-	});
-
-	$('.eventos li.evento .texto').each((i, element) => {
-		var event = '';
-		$(element).find('p').each((i, paragraph) => {
-			event += $(paragraph).html() + '\n';
-		});
-		if(event != '')
-			events.push(event);
-	});
-
-	for(var i = 0; i < 10; i++)
+	var html = await get(COVID_NEWS_URI);
+	if(html.statusCode == 301)
 	{
-		if(isHtmlEventsRight(events, i))
-			message += '• ' + times[i] + ' - ' + events[i] + '\n\n';
+		console.log("Pagina movida, cambia la URL a ",html.headers.location);
+		get = bent('string', 200);
+		html = await get(html.headers.location);
+		message = processHtmlIntoMessage(html, message);
 	}
-
-	message += 'Fuente de datos: <a href="' + COVID_NEWS_URI + '">RTVE.</a>';
+	else
+	{
+		message = processHtmlIntoMessage(html.body, message);
+	}
 	
 	return message;
 };
@@ -151,4 +138,27 @@ module.exports.covidApp = async event => {
 
 	return { statusCode: 200 };
 };
+
+function processHtmlIntoMessage(html, message) {
+	var $ = cheerio.load(html);
+	var times = [];
+	var events = [];
+	$('.eventos li.evento span.time').each((i, element) => {
+		times.push($(element).text());
+	});
+	$('.eventos li.evento .texto').each((i, element) => {
+		var event = '';
+		$(element).find('p').each((i, paragraph) => {
+			event += $(paragraph).html() + '\n';
+		});
+		if (event != '')
+			events.push(event);
+	});
+	for (var i = 0; i < 10; i++) {
+		if (isHtmlEventsRight(events, i))
+			message += '• ' + times[i] + ' - ' + events[i] + '\n\n';
+	}
+	message += 'Fuente de datos: <a href="' + COVID_NEWS_URI + '">RTVE.</a>';
+	return message;
+}
 
