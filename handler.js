@@ -7,7 +7,8 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 
 const COVID_DATA_HOSTNAME = 'https://www.epdata.es/';
 const COVID_DATA_URI = 'oembed/get/';
-const COVID_NEWS_URI = 'https://www.rtve.es/noticias/20200321/coronavirus_ultima_hora_espana_mundo/2008165.shtml';
+const COVID_NEWS_URI = 'https://www.rtve.es/noticias/20200323/coronavirus-ultima-hora/2008165.shtml';
+
 const INFECTED_PAYLOAD = { Formato: 'json', Guid: 'a3e214f9-bab7-4231-97b8-edbe9d0c85a3', Host: 'wwww.epdata.es' };
 const HEALED_PAYLOAD = { Formato: 'json', Guid: '58d0919c-8ad1-4a3f-9255-55f5b116da23', Host: 'wwww.epdata.es' };
 const DEATH_PAYLOAD = { Formato: 'json', Guid: 'b2568be9-c6b6-4056-86d6-02c6d45b1696', Host: 'wwww.epdata.es' };
@@ -79,33 +80,62 @@ const getLastHourInfo = async () => {
 }
 
 const getNews = async () => {
-	var get = bent(301,200);
-	var message = '\u2757 \u2757 ÚLTIMA HORA \u2757 \u2757 \n\n';
+	var get = bent('string', 200);
+	return get(COVID_NEWS_URI)
+			.then(processHtmlIntoMessage)
+			.catch(tryNewsRequest);
+};
 
-	var html = await get(COVID_NEWS_URI);
-	if(html.statusCode == 301)
-	{
-		console.log("Pagina movida, cambia la URL a ",html.headers.location);
-		get = bent('string', 200);
-		html = await get(html.headers.location);
-		message = processHtmlIntoMessage(html, message);
+const processHtmlIntoMessage = (html) => {
+	var message = '\u2757 \u2757 ÚLTIMA HORA \u2757 \u2757 \n\n';
+	var $ = cheerio.load(html);
+	var times = [];
+	var events = [];
+	$('.eventos li.evento span.time').each((i, element) => {
+		times.push($(element).text());
+	});
+	$('.eventos li.evento .texto').each((i, element) => {
+		var event = '';
+		$(element).find('p').each((i, paragraph) => {
+			event += $(paragraph).html() + '\n';
+		});
+		if (event != '')
+			events.push(event);
+	});
+	for (var i = 0; i < 10; i++) {
+		if (isHtmlEventsRight(events, i))
+			message += '• ' + times[i] + ' - ' + events[i] + '\n\n';
 	}
-	else
-	{
-		message = processHtmlIntoMessage(html.body, message);
-	}
-	
+	message += 'Fuente de datos: <a href="' + COVID_NEWS_URI + '">RTVE.</a>';
 	return message;
 };
 
 const isHtmlEventsRight = (events, index) => {
-	//TODO: Rethink this method to get consistent information and dont lose parity time - news
-	if(events[index].indexOf('<img') == -1)
-		return true;
-	else if(index < 10)
-		isHtmlEventsRight(events, index + 1);
+	if(events[index] != undefined)
+	{
+		//TODO: Rethink this method to get consistent information and dont lose parity time - news
+		if(events[index].indexOf('<img') == -1)
+			return true;
+		else if(index < 10)
+			isHtmlEventsRight(events, index + 1);
+		else
+			return false;
+	}
 	else
 		return false;
+};
+
+const tryNewsRequest = (res) => {
+	var get = bent('string', 200);
+	if(res.statusCode == 301)
+	{
+		console.log(res.headers.location);
+		return get(res.headers.location)
+			.then(processHtmlIntoMessage)
+			.catch(console.log);
+	}
+	else
+		return 'No hay noticias disponibles.';
 };
 
 const getSendMessage = async (text) => {
@@ -139,26 +169,4 @@ module.exports.covidApp = async event => {
 	return { statusCode: 200 };
 };
 
-function processHtmlIntoMessage(html, message) {
-	var $ = cheerio.load(html);
-	var times = [];
-	var events = [];
-	$('.eventos li.evento span.time').each((i, element) => {
-		times.push($(element).text());
-	});
-	$('.eventos li.evento .texto').each((i, element) => {
-		var event = '';
-		$(element).find('p').each((i, paragraph) => {
-			event += $(paragraph).html() + '\n';
-		});
-		if (event != '')
-			events.push(event);
-	});
-	for (var i = 0; i < 10; i++) {
-		if (isHtmlEventsRight(events, i))
-			message += '• ' + times[i] + ' - ' + events[i] + '\n\n';
-	}
-	message += 'Fuente de datos: <a href="' + COVID_NEWS_URI + '">RTVE.</a>';
-	return message;
-}
 
