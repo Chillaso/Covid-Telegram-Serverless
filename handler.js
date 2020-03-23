@@ -138,7 +138,7 @@ const tryNewsRequest = (res) => {
 		return 'No hay noticias disponibles.';
 };
 
-const getSendMessage = async (text) => {
+const getMessage = async (text) => {
 	switch(text)
 	{
 		case '/incremento':
@@ -156,17 +156,14 @@ const sendToUser = async (chat_id, text) =>
 {
 	const get = bent('https://api.telegram.org/', 'GET', 'json', 200);
 	const uri = `bot${TELEGRAM_TOKEN}/sendMessage`;
-	return await get(uri, {chat_id, text, parse_mode: "HTML"});
+	await get(uri, {chat_id, text, parse_mode: "HTML"});
 }
 
-module.exports.covidApp = async event => {
-
+module.exports.covidApp = async event => 
+{
 	const body = JSON.parse(event.body);
 	const { chat, text } = body.message;
-	let message = await getSendMessage(text);
+	let message = await getMessage(text);
 	await sendToUser(chat.id, message);
-
 	return { statusCode: 200 };
 };
-
-
