@@ -1,4 +1,14 @@
 service: covid-increment-sls
+package:
+  exclude:
+    - README.md
+custom:
+  myStage: ${opt:stage, self:provider.stage}
+  myEnvironment:
+    TELEGRAM_TOKEN:
+      prod: ${env:TELEGRAM_TOKEN}
+      dev: ${env:TELEGRAM_TOKEN_DEV}
+
 
 provider:
   name: aws
@@ -6,7 +16,7 @@ provider:
   stage: dev
   region: eu-west-1
   environment:
-    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+    TELEGRAM_TOKEN: ${self:custom.myEnvironment.TELEGRAM_TOKEN.${self:custom.myStage}}
 
 functions:
   covid:
@@ -16,14 +26,5 @@ functions:
           path: covid
           method: post
 	  cors: true
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
 plugins:
   - serverless-offline
