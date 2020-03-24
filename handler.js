@@ -10,11 +10,11 @@ const getMessage = async (command) => {
 	switch(command)
 	{
 		case '/incremento':
-			return increment.getIncrement()
+			return await increment.getIncrement()
 		case '/ultimahora':
-			return lasthour.getLastHour()
+			return await lasthour.getLastHour()
 		case '/noticias':
-			return news.getNews()
+			return await news.getNews()
 		default:
 			return constants.HELP_MESSAGE
 	}
@@ -23,7 +23,8 @@ const getMessage = async (command) => {
 module.exports.covidApp = async event => 
 {
 	let telegram = telegramService.getCommand(event)
-	return getMessage(telegram.command)
+
+	await getMessage(telegram.command)
 	/*
 		Take care with this, because if you don't pass a object reference it crash inside send message
 		method. You can check more of this explanation here:
@@ -32,5 +33,10 @@ module.exports.covidApp = async event =>
 	*/
 	.then(message => telegram.sendMessage(message))
 	.then({statusCode: 200})
-	.catch(console.error)
+	.catch(e => {
+		console.error(e)
+		return {statusCode: 200}
+	})
+
+	return {statusCode: 200}
 }
