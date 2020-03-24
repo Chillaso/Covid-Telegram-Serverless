@@ -65,10 +65,6 @@ const tryNewsRequest = (res) => {
 		console.log(res.headers.location);
 		return get(res.headers.location)
 			.then(getMessage)
-			.catch(e => {
-                console.error(e)
-                return constants.ERROR_MESSAGE
-            });
 	}
 	else
 		return constants.ERROR_MESSAGE;

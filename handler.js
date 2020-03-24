@@ -35,6 +35,7 @@ module.exports.covidApp = async event =>
 	.then({statusCode: 200})
 	.catch(e => {
 		console.error(e)
+		telegram.sendMessage(constants.ERROR_MESSAGE)
 		return {statusCode: 200}
 	})
 

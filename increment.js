@@ -1,17 +1,12 @@
 'use strict'
 
 const epdata = require('./epdataConnector')
-const constants = require('./constants')
 
 module.exports.getIncrement = async () => {
     return epdata.doInfectedRequest()
     .then(epdata.filterInfoByDate)
     .then(({todayInfo, yesterdayInfo}) => calcIncrement(todayInfo, yesterdayInfo))
     .then(({increment, yesterdayInfo, todayInfo}) => getMessage(increment, yesterdayInfo, todayInfo))
-    .catch(e => {
-        console.error(e);
-        return constants.ERROR_MESSAGE
-    });
 };
 
 const calcIncrement = (todayInfo, yesterdayInfo) => 

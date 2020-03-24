@@ -1,15 +1,10 @@
 'use strict'
 
 const epdata = require('./epdataConnector')
-const constants = require('./constants')
 
 module.exports.getLastHour = () => {
     return getLastHourInfo()
     .then(({infected, healed, death}) => getMessage(infected, healed, death))
-    .catch(e => {
-        console.error(e)
-        return constants.ERROR_MESSAGE
-    })
 }
 
 const getLastHourInfo = async () => {
