@@ -10,11 +10,11 @@ const getMessage = async (command) => {
 	switch(command)
 	{
 		case '/incremento':
-			return increment.getIncrement()
+			return await increment.getIncrement()
 		case '/ultimahora':
-			return lasthour.getLastHour()
+			return await lasthour.getLastHour()
 		case '/noticias':
-			return news.getNews()
+			return await news.getNews()
 		default:
 			return constants.HELP_MESSAGE
 	}

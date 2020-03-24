@@ -2,6 +2,7 @@
 
 const bent = require('bent')
 const constants = require('./constants')
+const utils = require('./utils')
 
 class Telegram {
 
@@ -16,9 +17,10 @@ class Telegram {
         const response = await get(constants.SEND_MESSAGE_URI, {chat_id, text, parse_mode: "HTML"});
         if(response.statusCode == 400)
         {
-            console.error('Bad HTML sended to telegram bot')
+            let error = await utils.getBuffer(response).then(JSON.parse)
+            console.error(error.error_code, error.description)
             text = constants.ERROR_MESSAGE
-            get(constants.SEND_MESSAGE_URI, {chat_id, text, parse_mode: "HTML"});
+            await get(constants.SEND_MESSAGE_URI, {chat_id, text, parse_mode: "HTML"});
         }
     }
 }
