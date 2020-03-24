@@ -14,7 +14,7 @@ module.exports.getNews = async () => {
 const getMessage = (html) => 
 {
     var message = '\u2757 \u2757 ÚLTIMA HORA \u2757 \u2757 \n\n';
-    var {times, events} = getEventsFromHtml(html);
+	var {times, events} = getEventsFromHtml(html);
 
 	for (var i = 0; i < constants.MAX_EVENTS; i++) {
 		if (isHtmlEventsRight(events, i))
@@ -30,7 +30,7 @@ const getEventsFromHtml = (html) => {
 
     var $ = cheerio.load(html);
     $('.eventos li.evento span.time').each((i, element) => {
-        times.push($(element).text());
+        times.push($(element).text().trim());
     });
     $('.eventos li.evento .texto').each((i, element) => {
         var event = '';
