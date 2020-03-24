@@ -5,10 +5,22 @@ const cheerio = require('cheerio');
 const constants = require('./constants')
 
 module.exports.getNews = async () => {
-	var get = bent('string', 200);
-	return get(constants.COVID_NEWS_URI)
-			.then(getMessage)
-			.catch(tryNewsRequest);
+	var get = bent(200, 301);
+	const res = await get(constants.COVID_NEWS_URI)
+	if(res.statusCode == 200)
+	{
+		return getBuffer(res)
+				.then(toString())
+				.then(getMessage)
+	}
+	else if(res.statusCode == 301)
+	{
+		console.log('Redirecting to', res.headers.location)
+		return get(res.headers.location)
+				.then(getBuffer)
+				.then(toString())
+				.then(getMessage)
+	}
 }
 
 const getMessage = (html) => 
@@ -58,15 +70,10 @@ const isHtmlEventsRight = (events, index) => {
 		return false;
 }
 
-const tryNewsRequest = (res) => {
-	if(res.statusCode == 301)
-	{
-	    const get = bent('string', 200);
-		console.log(res.headers.location);
-		return get(res.headers.location)
-			.then(getMessage)
-	}
-	else
-		return constants.ERROR_MESSAGE;
-}
+const getBuffer = stream => new Promise((resolve, reject) => {
+  const parts = []
+  stream.on('error', reject)
+  stream.on('end', () => resolve(Buffer.concat(parts)))
+  stream.on('data', d => parts.push(d))
+})
 

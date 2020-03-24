@@ -10,11 +10,11 @@ const getMessage = async (command) => {
 	switch(command)
 	{
 		case '/incremento':
-			return await increment.getIncrement()
+			return increment.getIncrement()
 		case '/ultimahora':
-			return await lasthour.getLastHour()
+			return lasthour.getLastHour()
 		case '/noticias':
-			return await news.getNews()
+			return news.getNews()
 		default:
 			return constants.HELP_MESSAGE
 	}
@@ -32,12 +32,6 @@ module.exports.covidApp = async event =>
 		Or just Google for object reference javascript
 	*/
 	.then(message => telegram.sendMessage(message))
-	.then({statusCode: 200})
-	.catch(e => {
-		console.error(e)
-		telegram.sendMessage(constants.ERROR_MESSAGE)
-		return {statusCode: 200}
-	})
 
 	return {statusCode: 200}
 }

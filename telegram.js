@@ -12,9 +12,14 @@ class Telegram {
 
     async sendMessage(text) {
         let chat_id = this.chatId
-        const get = bent('GET', 'json', 200);
-        const uri = `https://api.telegram.org/bot${constants.TELEGRAM_TOKEN}/sendMessage`;
-        return get(uri, {chat_id, text, parse_mode: "HTML"});
+        const get = bent(200, 400);
+        const response = await get(constants.SEND_MESSAGE_URI, {chat_id, text, parse_mode: "HTML"});
+        if(response.statusCode == 400)
+        {
+            console.error('Bad HTML sended to telegram bot')
+            text = constants.ERROR_MESSAGE
+            get(constants.SEND_MESSAGE_URI, {chat_id, text, parse_mode: "HTML"});
+        }
     }
 }
 

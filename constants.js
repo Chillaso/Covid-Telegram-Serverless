@@ -1,5 +1,5 @@
 module.exports = {
-    TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN,
+    SEND_MESSAGE_URI: `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage`,
     EPDATA_URI: 'https://www.epdata.es/oembed/get/',
     COVID_NEWS_URI: 'https://www.rtve.es/noticias/20200323/coronavirus-ultima-hora/2008165.shtml',
     MAX_EVENTS: 10,
