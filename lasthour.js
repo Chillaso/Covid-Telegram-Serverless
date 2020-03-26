@@ -28,7 +28,8 @@ const getMessage = (infected, healed, death) => {
             '\u2623 - <b>' + infected.Valor + '</b> - personas infectadas\n\n' +
             '\u26B0 - <b>' + death.Valor + '</b> - personas fallecidas\n\n' +
             '\u2705 - <b>' + healed.Valor + '</b> - personas recuperadas\n\n' +
-            '\u2757 - <b>' + (infected.Valor - death.Valor - healed.Valor) + '</b> - personas activas infectadas';
+            '\u2757 - <b>' + (infected.Valor - death.Valor - healed.Valor) + '</b> - personas activas infectadas \n\n' +
+            '<i>Fuente: Ministerio de sanidad y epdata.es</i>';
     }
     else
         return constants.ERROR_MESSAGE;

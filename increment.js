@@ -15,9 +15,15 @@ const calcIncrement = (todayInfo, yesterdayInfo) =>
 	return { increment, yesterdayInfo, todayInfo };
 }
 
+const getDifference = (today, yesterday) => {
+    return today - yesterday;
+}
+
 const getMessage = (increment, yesterdayInfo, todayInfo) => 
 {
     return '\u2623 Los casos de coronavirus han incrementado un: <b>' + increment + '%</b> desde el ' 
         + yesterdayInfo.Parametro + ' hasta el ' + todayInfo.Parametro
-        + ' pasando de ' + yesterdayInfo.Valor + ' a ' + todayInfo.Valor + ' afectados, según fuentes del Ministerio de Sanidad.';
+        + ' pasando de ' + yesterdayInfo.Valor + ' a ' + todayInfo.Valor + ' afectados. Suponiendo <b>'
+        + getDifference(todayInfo.Valor, yesterdayInfo.Valor) + ' nuevos casos durante la jornada actual.</b>\n\n'
+        + '<i>Fuente: Ministerio de Sanidad y epdata.es</i>';
 }

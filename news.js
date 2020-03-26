@@ -33,7 +33,7 @@ const getMessage = (html) =>
 		if (isHtmlEventsRight(events, i))
 			message += '• ' + times[i] + ' - ' + events[i] + '\n\n';
 	}
-    message += 'Fuente de datos: <a href="' + constants.COVID_NEWS_URI + '">RTVE.</a>';
+    message += '<i>Fuente de datos: <a href="' + constants.COVID_NEWS_URI + '">RTVE.</a></i>';
 	return message;
 }
 
