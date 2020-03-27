@@ -7,7 +7,8 @@ const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
 const PAYLOADS = {
     'infected': { Formato: 'json', Guid: 'a3e214f9-bab7-4231-97b8-edbe9d0c85a3', Host: 'wwww.epdata.es' },
     'healed': { Formato: 'json', Guid: '58d0919c-8ad1-4a3f-9255-55f5b116da23', Host: 'wwww.epdata.es' },
-    'death': { Formato: 'json', Guid: 'b2568be9-c6b6-4056-86d6-02c6d45b1696', Host: 'wwww.epdata.es' },
+	'death': { Formato: 'json', Guid: 'b2568be9-c6b6-4056-86d6-02c6d45b1696', Host: 'wwww.epdata.es' },
+	'global': { Formato: 'json', Guid: 'c07ac326-e36d-4af7-9c7a-af5d37d2d944', Host: 'wwww.epdata.es' }
 }
 
 module.exports.doInfectedRequest = async () => {
@@ -20,6 +21,10 @@ module.exports.doHealedRequest = async () => {
 
 module.exports.doDeathRequest = async () => {
     return this.doRequest(PAYLOADS.death)
+}
+
+module.exports.doGlobalRequest = async() => {
+	return this.doRequest(PAYLOADS.global);
 }
 
 module.exports.doRequest = async (payload) => {
