@@ -26,13 +26,15 @@ module.exports.getNews = async () => {
 
 const getMessage = (html) => 
 {
-    var message = '\u2757 \u2757 ÚLTIMA HORA \u2757 \u2757 \n\n';
-	var {times, events} = getEventsFromHtml(html);
+	var message = '\u2757 \u2757 ÚLTIMA HORA \u2757 \u2757 \n\n';
 
-	for (var i = 0; i < constants.MAX_EVENTS; i++) {
-		if (isHtmlEventsRight(events, i))
-			message += '• ' + times[i] + ' - ' + events[i] + '\n\n';
+	var {times, events} = getEventsFromHtml(html);
+	var {filteredTimes, filteredEvents} = filterAvailableNews(times, events);
+
+	for (var i = 0; i < filteredTimes.length; i++) {
+		message += '• ' + filteredTimes[i] + ' - ' + filteredEvents[i] + '\n\n';
 	}
+
     message += '<i>Fuente de datos: <a href="' + constants.COVID_NEWS_URI + '">RTVE.</a></i>';
 	return message;
 }
@@ -56,17 +58,41 @@ const getEventsFromHtml = (html) => {
     return {times, events}
 }
 
-const isHtmlEventsRight = (events, index) => {
-	if(events[index] != undefined)
+const filterAvailableNews = (times, events) => {
+	const filteredTimes = [];
+	const filteredEvents = [];
+	const maxSize = getMaxSizeCanLoop(times, events);
+	for(var i = 0; i < maxSize; i++)
 	{
-		//TODO: Rethink this method to get consistent information and dont lose parity time - news
-		if(events[index].indexOf('<img') == -1)
-			return true;
-		else if(index < 10)
-			isHtmlEventsRight(events, index + 1);
-		else
+		if(filteredTimes.length == constants.MAX_EVENTS)
+			break;
+
+		if(isHtmlEventsRight(events[i])) 
+		{
+			filteredTimes.push(times[i]);
+			filteredEvents.push(events[i]);
+		}
+	}
+	return {filteredTimes, filteredEvents};
+}
+
+const getMaxSizeCanLoop = (times, events) => {
+	let maxSize = 0;
+	if(times.length > events.length)
+		maxSize = events.length
+	else if(times.length < events.length)
+		maxSize = times.length
+	else
+		maxSize = events.length
+	return maxSize;
+}
+
+const isHtmlEventsRight = (event) => 
+{
+	for (const tag of constants.UNSUPORTED_HTML_TAGS)
+	{
+		if(event.indexOf(tag) != -1)
 			return false;
 	}
-	else
-		return false;
+	return true;
 }
