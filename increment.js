@@ -24,17 +24,22 @@ const getDifference = (today, yesterday) => {
 }
 
 const calcGlobalPercentage = (localInfect, globalInfect) => {
-    console.log(globalInfect);
-    
-    return ((localInfect / globalInfect) * 100).toFixed(2);
+    if(localInfect != undefined && globalInfect != undefined)
+        return ((localInfect / globalInfect) * 100).toFixed(2);
+    else
+        return -1;
 }
 
 const getMessage = (increment, yesterdayInfo, todayInfo, globalCases) => 
 {
-    return '\u2623 Los casos de coronavirus han incrementado un: <b>' + increment + '%</b> desde el ' 
+    let message = '\u2623 Los casos de coronavirus han incrementado un: <b>' + increment + '%</b> desde el ' 
         + yesterdayInfo.Parametro + ' hasta el ' + todayInfo.Parametro
         + ' pasando de ' + yesterdayInfo.Valor + ' a ' + todayInfo.Valor + ' afectados. Suponiendo <b>'
-        + getDifference(todayInfo.Valor, yesterdayInfo.Valor) + ' nuevos casos durante la jornada actual.</b>\n\n'
-        + 'Y representando los casos locales el <b>' + globalCases + '% total de casos de todo el mundo.</b>\n\n'
-        + '<i>Fuente: Ministerio de Sanidad y epdata.es</i>';
+        + getDifference(todayInfo.Valor, yesterdayInfo.Valor) + ' nuevos casos durante la jornada actual.</b>\n\n';
+
+        if(globalCases != -1)
+            message += 'Y representando los casos locales el <b>' + globalCases + '% total de casos de todo el mundo.</b>\n\n';
+
+        message += '<i>Fuente: Ministerio de Sanidad y epdata.es</i>';
+    return message;
 }
