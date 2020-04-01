@@ -52,7 +52,7 @@ module.exports.filterInfoByDate = (covidData) =>
 	//We dont have data from today yet
 	if (todayInfo.length == 0) {
 		const twoDaysAgo = new Date();
-		twoDaysAgo.setDate(yesterday.getDate() - 1);
+		twoDaysAgo.setDate(today.getDate() - 2);
 		covidData.forEach(day => {
 			if (day.Parametro.includes(yesterday.getDate() + ' (' + MONTHS[yesterday.getMonth()] + ')'))
 				todayInfo = day;
