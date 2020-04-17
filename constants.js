@@ -1,7 +1,7 @@
 module.exports = {
     SEND_MESSAGE_URI: `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage`,
     EPDATA_URI: 'https://www.epdata.es/oembed/get/',
-    COVID_NEWS_URI: 'https://www.rtve.es/noticias/20200416/coronavirus-covid19-espana-mundo-noticias-ultima-hora-directo/2011482.shtml',
+    COVID_NEWS_URI: 'https://www.rtve.es/noticias/20200417/coronavirus-covid19-espana-mundo-curva-contagios-noticias-ultima-hora-directo/2012223.shtml',
     MAX_EVENTS: 8,
 
     ERROR_MESSAGE: 'No se puede obtener los datos en estos momentos. Disculpe las molestias',
